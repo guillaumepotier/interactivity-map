@@ -1,39 +1,27 @@
 import { useEffect, useState } from 'react';
 import {
   MAP_MODE,
-  ABLY_API_KEY,
-  ABLY_ROOM
 } from './config.js';
-import Ably from 'ably';
-
+import { channel } from "./realtime";
 import ProportionalSymbolMap from './Displays/ProportionalSymbolMap';
 
 const citiesMap = {};
 
+const PROJECTION = {
+  mode: "geoMercator",
+  config: {},
+  rotation: "centered",
+};
+
 function Display() {
+  const [projection, setProjection] = useState(PROJECTION);
   const [data, setData] = useState([]);
   const cities = Object.values(data);
 
-  console.log('data', data);
-  console.log('cities', cities);
-
-  // city data fixtures
-  // useEffect(() => {
-  //   csv("/data.csv").then((cities) => {
-  //     console.log('cities', cities);
-  //     const sortedCities = cities.sort((o) => -o.population);
-  //     setData(sortedCities);
-  //   });
-  // }, []);
+  // console.log('data', data);
+  // console.log('cities', cities);
 
   useEffect(() => {
-    const ably = new Ably.Realtime(ABLY_API_KEY);
-    const channel = ably.channels.get(ABLY_ROOM);
-
-    window.channel = channel;
-
-    console.log('connected to Ably', channel);
-
     channel.subscribe('update', (message) => {
       const { city, lat, lng } = message.data;
 
@@ -52,6 +40,11 @@ function Display() {
       setData(clonedData);
     });
 
+    channel.subscribe('projection', (message) => {
+      console.log('received projection', message.data);
+      setProjection({ ...projection, ...message.data });
+    });
+
     return () => {
       channel.unsubscribe();
     };
@@ -64,7 +57,7 @@ function Display() {
       )}
 
       {MAP_MODE === 'city' && (
-        <ProportionalSymbolMap data={Object.values(data)} />
+        <ProportionalSymbolMap projection={projection} data={Object.values(data)} />
       )}
     </div>
   );

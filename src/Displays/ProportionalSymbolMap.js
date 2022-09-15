@@ -7,7 +7,6 @@ import {
   Marker
 } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
-import { csv } from "d3-fetch";
 
 // const PROJECTION = {
 //   mode: "geoOrthographic",
@@ -28,20 +27,27 @@ const geoUrl =
 // FRANCE GEOJSON
 // const geoUrl = "https://france-geojson.gregoiredavid.fr/repo/regions.geojson";
 
-function ProportionalSymbolMap() {
+function ProportionalSymbolMap({ data }) {
 
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
   const [maxValue, setMaxValue] = useState(0);
 
-  useEffect(() => {
-    csv("/data.csv").then((cities) => {
-      console.log('cities', cities);
-      const sortedCities = cities.sort((o) => -o.population);
+  // useEffect(() => {
+  //   csv("/data.csv").then((cities) => {
+  //     console.log('cities', cities);
+  //     const sortedCities = cities.sort((o) => -o.population);
 
-      setMaxValue(sortedCities[0].population);
-      setData(sortedCities);
-    });
-  }, []);
+  //     setMaxValue(sortedCities[0].population);
+  //     setData(sortedCities);
+  //   });
+  // }, []);
+
+  useEffect(() => {
+    // const sortedCities = data.sort((o) => -o.population);
+    if (!data.length) return;
+    setMaxValue(data[0].count);
+    console.log("foo", data[0].count)
+  }, [data]);
 
   const popScale = useMemo(
     () => scaleLinear().domain([0, maxValue]).range([0, 12]),
@@ -58,7 +64,7 @@ function ProportionalSymbolMap() {
           ))
         }
       </Geographies>
-      {data.map(({ city_code, lng, lat, population }) => {
+      {data.map(({ city_code, lng, lat, count }) => {
         // console.log(city_code, lng, lat, population);
 
         return (
@@ -75,7 +81,7 @@ function ProportionalSymbolMap() {
               stroke: "white",
             },
           }}>
-            <circle r={popScale(population)} />
+            <circle r={popScale(count)} />
           </Marker>
         );
       })}

@@ -1,4 +1,5 @@
 import React from "react";
+import GeoButton from "./Answer/GeoButton";
 
 import Input from "./Answer/Input";
 
@@ -9,6 +10,7 @@ const Answer = () => {
 
       <div className="root">
         <Input />
+        <GeoButton />
       </div>
     </div>
   );

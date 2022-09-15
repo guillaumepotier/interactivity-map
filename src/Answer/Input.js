@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { fetchCities, getCitiesCoords } from "./service";
-
+import { channel } from "../realtime";
 const Input = () => {
   const [city, setCity] = useState("");
   const [autocompleteCities, setAutocompleteCities] = useState([]);
@@ -20,7 +20,7 @@ const Input = () => {
 
     const coordinates = res.features[0].geometry.coordinates;
     console.log(coordinates);
-    // TODO: send coordinates with websocket
+    channel.publish("update", { lng: coordinates[0], lat: coordinates[1], city: city });
   };
 
   return (

@@ -61,13 +61,7 @@ function Display() {
         display: "flex",
         backgroundColor: '#006994',
       }}>
-        {MAP_MODE === 'country' && (
-          <div>country</div>
-        )}
-
-        {MAP_MODE === 'city' && (
-          <ProportionalSymbolMap country={country} projection={projection} data={Object.values(data)} />
-        )}
+        <ProportionalSymbolMap country={country} projection={projection} data={Object.values(data)} />
       </div>
     </div>
   );

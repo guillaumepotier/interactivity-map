@@ -20,6 +20,7 @@ const Input = () => {
 
     const coordinates = res.features[0].geometry.coordinates;
     console.log(coordinates);
+    // TODO: send coordinates with websocket
   };
 
   return (

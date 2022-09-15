@@ -24,3 +24,15 @@ export const getCitiesCoords = async (city) => {
     return { error: "Unable to retrieve  city" };
   }
 };
+
+// REVERSE GEOCODING
+
+export const getCityName = async (lng, lat) => {
+  try {
+    const res = await fetch(`https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=place&access_token=${api_key}`);
+    if (!res.ok) throw new Error(res.statusText);
+    return res.json();
+  } catch (err) {
+    return { error: "Unable to retrieve city" };
+  }
+};

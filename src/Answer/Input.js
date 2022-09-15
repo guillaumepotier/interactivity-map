@@ -24,13 +24,12 @@ const Input = () => {
   };
 
   return (
-    <div>
-      <div>
-        <label htmlFor="city" className="label">
-          Your city
-          {autocompleteErr && <span>{autocompleteErr}</span>}
-        </label>
+    <div className="">
+      {autocompleteErr && <span>{autocompleteErr}</span>}
+
+      <div className="input-group mb-3">
         <input
+          class="form-control"
           list="places"
           type="text"
           id="city"
@@ -40,13 +39,16 @@ const Input = () => {
           required
           pattern={autocompleteCities.join("|")}
           autoComplete="off"
+          placeholder="Enter your city"
         />
         <datalist id="places">
           {autocompleteCities.map((city, i) => (
             <option key={i}>{city}</option>
           ))}
         </datalist>
-        <button onClick={handleGeo}>Choose</button>
+        <button type="button" className="btn btn-primary" onClick={handleGeo}>
+          Choose
+        </button>
       </div>
     </div>
   );

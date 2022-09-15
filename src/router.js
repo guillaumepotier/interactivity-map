@@ -1,6 +1,4 @@
-import {
-  createBrowserRouter,
-} from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 
 import Home from "./Home";
 import Answer from "./Answer";
@@ -13,12 +11,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/answer",
-    element: <Answer />
+    element: <Answer />,
   },
   {
     path: "/display",
-    element: <Display />
-  }
+    element: <Display />,
+  },
 ]);
 
 export default router;

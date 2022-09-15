@@ -16,16 +16,13 @@ const PROJECTION = {
 function Display() {
   const [projection, setProjection] = useState(PROJECTION);
   const [data, setData] = useState([]);
-  const cities = Object.values(data);
-
-  // console.log('data', data);
-  // console.log('cities', cities);
+  const [country, setCountry] = useState('world');
 
   useEffect(() => {
+    document.getElementById('root').style.backgroundColor = '#006994';
+
     channel.subscribe('update', (message) => {
       const { city, lat, lng } = message.data;
-
-      console.log('received update', city, lat, lng);
 
       if (!lng || !lat || !city) return;
 
@@ -34,15 +31,17 @@ function Display() {
       if (!citiesMap[city_code]) citiesMap[city_code] = { city, city_code, lng, lat, count: 0 };
       citiesMap[city_code].count += 1;
 
-      console.log('citiesMap', citiesMap);
       const clonedData = { ...citiesMap };
 
       setData(clonedData);
     });
 
     channel.subscribe('projection', (message) => {
-      console.log('received projection', message.data);
       setProjection({ ...projection, ...message.data });
+    });
+
+    channel.subscribe('country', (message) => {
+      setCountry(message.data);
     });
 
     return () => {
@@ -51,14 +50,25 @@ function Display() {
   }, []);
 
   return (
-    <div className="Display">
-      {MAP_MODE === 'country' && (
-        <div>country</div>
-      )}
+    <div style={{
+      display: "block",
+      width: "100%",
+      height: "100%",
+      justifyContent: "center",
+      alignItems: "center",
+    }}>
+      <div className="Display" style={{
+        display: "flex",
+        backgroundColor: '#006994',
+      }}>
+        {MAP_MODE === 'country' && (
+          <div>country</div>
+        )}
 
-      {MAP_MODE === 'city' && (
-        <ProportionalSymbolMap projection={projection} data={Object.values(data)} />
-      )}
+        {MAP_MODE === 'city' && (
+          <ProportionalSymbolMap country={country} projection={projection} data={Object.values(data)} />
+        )}
+      </div>
     </div>
   );
 }

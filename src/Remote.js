@@ -36,6 +36,12 @@ function Remote() {
         }}/>
         <button onClick={() => onProjectionChange("scale", scale)}>sync</button>
       </div>
+
+      <div>
+        <h2>Country</h2>
+        <button onClick={() => channel.publish('country', 'world')}>world</button>
+        <button onClick={() => channel.publish('country', 'france')}>france</button>
+      </div>
     </div>
   );
 }

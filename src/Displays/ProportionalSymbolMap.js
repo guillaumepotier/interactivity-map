@@ -8,23 +8,18 @@ import {
 } from "react-simple-maps";
 import { scaleLinear } from "d3-scale";
 
-// WORLD GEOJSON
-const geoUrl =
-  "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json";
-
-// FRANCE GEOJSON
-// const geoUrl = "https://france-geojson.gregoiredavid.fr/repo/regions.geojson";
+const MAPS = {
+  world: "https://raw.githubusercontent.com/deldersveld/topojson/master/world-countries.json",
+  france: "https://france-geojson.gregoiredavid.fr/repo/regions.geojson",
+};
 
 const rot = [-25, -25, -10];
 
-function ProportionalSymbolMap({ data, projection }) {
+function ProportionalSymbolMap({ data, projection, country }) {
   const [rotate, setRotate] = useState(rot);
-
-  console.log('>> projection', projection);
 
   // const [data, setData] = useState([]);
   const [maxValue, setMaxValue] = useState(0);
-  console.log('maxValue', maxValue);
 
   useEffect(() => {
     if (!data.length) return;
@@ -32,8 +27,6 @@ function ProportionalSymbolMap({ data, projection }) {
   }, [data]);
 
   useEffect(() => {
-    console.log('rotation changed', projection?.rotation);
-
     if (window.timeInterval) clearInterval(window.timeInterval);
 
     if (projection?.rotation === "fixed" || projection?.rotation === "centered") return;
@@ -47,8 +40,7 @@ function ProportionalSymbolMap({ data, projection }) {
 
   const popScale = useMemo(
     () => {
-      console.log('popScale', scaleLinear().domain([0, maxValue]).range([0, 5]));
-      return scaleLinear().domain([0, maxValue]).range([0, 5])
+      return scaleLinear().domain([0, maxValue]).range([0, 12])
     },
     [maxValue]
   );
@@ -61,16 +53,30 @@ function ProportionalSymbolMap({ data, projection }) {
   if (projection.scale)
     projectionConfig.scale = projection.scale;
 
+  if (country === "france") {
+    projectionConfig.center = [2.213749, 46.227638];
+    projection.scale = 2000;
+  }
+
+  if (country === "world") {
+    projectionConfig.center = [0, 20];
+    projection.scale = 100;
+  }
+
   return (
     // <ComposableMap projectionConfig={{ rotate: [-10, 0, 0] }}>
     <ComposableMap projection={projection.mode} projectionConfig={projectionConfig}>
-      <Geographies geography={geoUrl}>
+      <Geographies
+        geography={MAPS[country]}
+        stroke="#000"
+      >
         {({ geographies }) =>
-          geographies.map((geo) => (
-            <Geography key={geo.rsmKey} geography={geo} fill="#DDD" />
-          ))
+          geographies.map((geo) => {
+            return <Geography key={geo.rsmKey} geography={geo} fill="#DDD" />
+          })
         }
       </Geographies>
+
       {data.map(({ city_code, lng, lat, count }) => {
         return (
           <Marker key={city_code} coordinates={[lng, lat]} style={{
